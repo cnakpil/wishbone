@@ -2,6 +2,7 @@ let angle = 0;
 let jitter = 0;
 let img;
 let playing_animation = true;
+let soundtrack, bone_crack;
 
 var serial; //variable to hold an instance of the serial port library
 var portName = 'COM3'; //fill in with YOUR port
@@ -11,18 +12,23 @@ function preload() {
   wishbone_left = loadImage('./bones/wishbone_left_broken.png')
   wishbone_right = loadImage('./bones/wishbone_right_broken.png')
   wishbone_whole = loadImage('./bones/wishbone.png')
+  soundtrack = loadSound('invincibility.mp3')
+  bone_crack = loadSound('bone-crack.mp3')
 }
 
 function setup() {
 
-  // alert('When the music stops,\n' +
-  //   'SMASH YOUR SIDE AS FAST AS POSSIBLE\n\n' +
-  //   'Good Luck!');
+  alert('When the music stops,\n' +
+    'SMASH YOUR SIDE AS FAST AS POSSIBLE\n\n' +
+    'Good Luck!');
 
   createCanvas(700, 700);
 
   imageMode(CENTER);
   img = wishbone_whole
+
+  soundtrack.playMode('sustain');
+  // soundtrack.play();
 
   // serial = new p5.SerialPort(); //a new instance of serial port library
 
@@ -58,17 +64,21 @@ function draw() {
     translate(width / 2, height / 2);
     image(img, 0, 0);
   }
-
 }
 
 function keyPressed() {
   if (keyCode === LEFT_ARROW) {
+    soundtrack.stop()
+    bone_crack.play();
     img = wishbone_left;
     playing_animation = false;
   } else if (keyCode === RIGHT_ARROW) {
+    soundtrack.stop()
+    bone_crack.play();
     img = wishbone_right;
     playing_animation = false;
   } else if (keyCode === DOWN_ARROW) {
+    soundtrack.play();
     img = wishbone_whole
     playing_animation = true;
   }
