@@ -1,31 +1,34 @@
 let angle = 0;
 let jitter = 0;
-let img;
-let playing_animation = true;
-let soundtrack, bone_crack;
+let img, button, soundtrack, bone_crack, timer;
+let playing_animation = false;
 
 var serial; //variable to hold an instance of the serial port library
 var portName = 'COM3'; //fill in with YOUR port
 
 function preload() {
-  retroFont = loadFont('ARCADECLASSIC.TTF');
   wishbone_left = loadImage('./bones/wishbone_left_broken.png')
   wishbone_right = loadImage('./bones/wishbone_right_broken.png')
   wishbone_whole = loadImage('./bones/wishbone.png')
-  soundtrack = loadSound('invincibility.mp3')
+  soundtrack = loadSound('invincibility_loop.mp3')
   bone_crack = loadSound('bone-crack.mp3')
 }
 
 function setup() {
 
-  alert('When the music stops,\n' +
+  alert(//'When the music stops,\n' +
     'SMASH YOUR SIDE AS FAST AS POSSIBLE\n\n' +
     'Good Luck!');
 
-  createCanvas(700, 700);
 
   imageMode(CENTER);
   img = wishbone_whole
+
+
+  button = createButton('START')
+  translate(width / 2, height / 2);
+  button.position(100, 100);
+  button.mousePressed(button_press)
 
   soundtrack.playMode('sustain');
   // soundtrack.play();
@@ -49,6 +52,15 @@ function setup() {
   // comp4 = true;
 }
 
+function button_press() {
+  button.hide();
+  img = wishbone_whole;
+  createCanvas(700, 700);
+  playing_animation = true;
+  soundtrack.stop();
+  soundtrack.loop();
+}
+
 function draw() {
   if (playing_animation === true) {
     clear()
@@ -68,19 +80,22 @@ function draw() {
 
 function keyPressed() {
   if (keyCode === LEFT_ARROW) {
-    soundtrack.stop()
+    soundtrack.stop();
     bone_crack.play();
     img = wishbone_left;
     playing_animation = false;
+    button.show()
   } else if (keyCode === RIGHT_ARROW) {
-    soundtrack.stop()
+    soundtrack.stop();
     bone_crack.play();
     img = wishbone_right;
     playing_animation = false;
+    button.show()
   } else if (keyCode === DOWN_ARROW) {
-    soundtrack.play();
-    img = wishbone_whole
-    playing_animation = true;
+    soundtrack.stop();
+    img = wishbone_whole;
+    playing_animation = false;
+    button.show();
   }
 }
 
