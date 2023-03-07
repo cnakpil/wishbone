@@ -1,10 +1,10 @@
 let angle = 0;
 let jitter = 0;
-let img, button, soundtrack, bone_crack, timer;
+let img, button, soundtrack, bone_crack, timer, b3, b4;
 let playing_animation = false;
 
 var serial; //variable to hold an instance of the serial port library
-var portName = 'COM3'; //fill in with YOUR port
+var portName = 'COM4'; //fill in with YOUR port
 
 function preload() {
   wishbone_left = loadImage('./bones/wishbone_left_broken.png')
@@ -33,23 +33,17 @@ function setup() {
   soundtrack.playMode('sustain');
   // soundtrack.play();
 
-  // serial = new p5.SerialPort(); //a new instance of serial port library
+  serial = new p5.SerialPort(); //a new instance of serial port library
 
   // //set up events for serial communication
-  // serial.on('connected', serverConnected);
-  // serial.on('open', portOpen);
-  // serial.on('data', serialEvent);
-  // serial.on('error', serialError);
-  // serial.on('close', portClose);
+  serial.on('connected', serverConnected);
+  serial.on('open', portOpen);
+  serial.on('data', serialEvent);
+  serial.on('error', serialError);
+  serial.on('close', portClose);
 
-  // //open our serial port
-  // serial.open(portName);
-
-  // //set comparison triggers to true
-  // comp1 = true;
-  // comp2 = true;
-  // comp3 = true;
-  // comp4 = true;
+  //open our serial port
+  serial.open(portName);
 }
 
 function button_press() {
@@ -67,6 +61,7 @@ function draw() {
     jitter = .08
     angle = angle + jitter;
     let c = cos(angle)
+    shears_action();
 
     translate(width / 2, height / 2);
     rotate(c)
@@ -75,17 +70,18 @@ function draw() {
     clear()
     translate(width / 2, height / 2);
     image(img, 0, 0);
+    console.log(b3 + ',' + b4)
   }
 }
 
 function keyPressed() {
-  if (keyCode === LEFT_ARROW) {
+  if ((keyCode === LEFT_ARROW)) {
     soundtrack.stop();
     bone_crack.play();
     img = wishbone_left;
     playing_animation = false;
     button.show()
-  } else if (keyCode === RIGHT_ARROW) {
+  } else if ((keyCode === RIGHT_ARROW)) {
     soundtrack.stop();
     bone_crack.play();
     img = wishbone_right;
@@ -99,28 +95,34 @@ function keyPressed() {
   }
 }
 
+function shears_action() {
+  if ((b4 == 0)) {
+    soundtrack.stop();
+    bone_crack.play();
+    img = wishbone_left;
+    playing_animation = false;
+    button.show()
+  }
+  if ((b3 == 0)) {
+    soundtrack.stop();
+    bone_crack.play();
+    img = wishbone_right;
+    playing_animation = false;
+    button.show()
+  }
+}
+
 /**
  * Todo - Add back serial function here for button smashes
  */
 function serialEvent() {
   // //receive serial data here
-  // var data = serial.readLine();
-  // if (data === "") return;
-  // console.log(data);
-  // var array = data.split(',')
-  // // console.log(array[1]);
+  var data = serial.readLine();
+  if (data === "") return;
+  var array = data.split(',')
 
-  // // map potentiometers to paddles
-  // p1.pos.y = map(array[0], 0, 255, 0, height - 1)
-  // p1.pos.y = constrain(p1.pos.y, 10, height - 10 - p1.h);
-  // p2.pos.y = map(array[1], 0, 255, 0, height - 1)
-  // p2.pos.y = constrain(p2.pos.y, 10, height - 10 - p2.h);
-
-  // // set button states
-  // b1 = parseInt(array[2]);
-  // b2 = parseInt(array[3]);
-  // b3 = parseInt(array[4]);
-  // b4 = parseInt(array[5]);
+  b3 = parseInt(array[0]);
+  b4 = parseInt(array[1]);
 }
 
 function serverConnected() {
